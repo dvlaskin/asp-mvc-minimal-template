@@ -40,6 +40,9 @@ The template is designed to be easy to customize to suit your specific requireme
 - The names of roles can also be found and changed in this class.
 - Account password settings, such as password length, can be set in the file Program.cs, in the part of code marked as "Configuration User's data." You can also add attributes to the DTO classes, for example, WebApp.Models.Dto.Account.RegisterDto.
 - To send an email with a confirmation link of a newly created account or reset the password, you must implement your own IEmailSender class. This template uses a fake email sender that doesn't send any email, it just imitates email sending.
+- The default admin role user: 
+  - login: admin@webapp.io
+  - password: 123
 
 
 ## Contribute to the project
