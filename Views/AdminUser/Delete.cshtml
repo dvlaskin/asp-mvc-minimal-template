@@ -1,0 +1,26 @@
+@model AppUser
+
+<h2>Delete User</h2>
+
+<div class="alert alert-danger">
+    Are you sure you want to delete this user?
+</div>
+
+<form asp-action="Delete" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="UserName" class="control-label"></label>
+        <input asp-for="UserName" class="form-control" disabled />
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Email" class="control-label"></label>
+        <input asp-for="Email" class="form-control" disabled />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Delete" class="btn btn-danger tb-marg" />
+        <a class="btn btn-secondary tb-marg" asp-area="" asp-controller="AdminUser" asp-action="Index">Back</a>
+    </div>
+</form>

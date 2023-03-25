@@ -1,0 +1,76 @@
+@model UserRolesDto
+
+@{
+    ViewBag.Title = "Manage User Roles";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>User: @Html.DisplayFor(model => model.UserName)</p>
+
+<a class="btn btn-secondary tb-marg" asp-area="" asp-controller="AdminUserRole" asp-action="Index">Back</a>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+@using (Html.BeginForm("Add", "AdminUserRole", FormMethod.Post))
+{
+    <div class="conteiner">
+    <div class="row">
+        <div class="col-md-2 col-sm-12">
+            <h3>Add Role:</h3>
+        </div>
+
+        <div class="col-md-3 col-sm-12">
+            @Html.HiddenFor(model => model.UserId)
+            @Html.DropDownListFor(
+            model => model.AddRole,
+            new SelectList(Model.AllRoles),
+            "Select a role",
+            new { @class = "form-select" }
+            )
+        </div>
+
+        <div class="col-md-3 col-sm-12">
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-block">Add Role</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@using (Html.BeginForm("Delete", "AdminUserRole", FormMethod.Post))
+{
+    <div class="conteiner">
+    <div class="row">
+        <div class="col-md-2 col-sm-12">
+            <h3>Remove Role:</h3>
+        </div>
+
+        <div class="col-md-3 col-sm-12">
+            @Html.HiddenFor(model => model.UserId)
+            @Html.DropDownListFor(model => model.RemoveRole, new SelectList(Model.UserRoles), "Select a role", new {
+            @class = "form-select" })
+        </div>
+        <div class="col-md-3 col-sm-12">
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-danger btn-block">Remove Role</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+<h3>Current Roles:</h3>
+<div class="conteiner">
+    <div class="row">
+        <div class="col-md-3 col-sm-12">
+            <ul class="list-group list-group-flush">
+                @foreach (var role in Model.UserRoles)
+                {
+                    <li class="list-group-item">@role</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
