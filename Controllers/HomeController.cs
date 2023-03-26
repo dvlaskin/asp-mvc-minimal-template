@@ -5,7 +5,7 @@ using WebApp.Models;
 
 namespace WebApp.Controllers;
 
-[Route("[controller]/[action]")]
+
 public class HomeController : Controller
 {
     private readonly IRepositories _repos;
