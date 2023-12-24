@@ -11,9 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Connection to DB
-builder.Services.AddEntityFrameworkSqlite().AddDbContext<AppDbContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"))
-    );
+builder.Services.AddDbContext<AppDbContext>();
 
 // Configuration User's data
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
