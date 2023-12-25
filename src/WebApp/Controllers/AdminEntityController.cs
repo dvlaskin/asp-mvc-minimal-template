@@ -83,8 +83,8 @@ public class AdminEntityController : Controller
             internalData.EntityData.Add(values);
         }
 
-        var jsonStr = JsonConvert.SerializeObject(internalData, Formatting.Indented);
-        logger.LogInformation($"=> JSON:\r\n{jsonStr}");
+        // var jsonStr = JsonConvert.SerializeObject(internalData, Formatting.Indented);
+        // logger.LogInformation($"=> JSON:\r\n{jsonStr}");
 
         return internalData;
     }
