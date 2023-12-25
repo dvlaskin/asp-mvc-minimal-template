@@ -25,25 +25,19 @@ public class AdminEntityController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var dbSetProperties = typeof(AppDbContext)
-            .GetProperties()
-            .Where(p =>
-                p.PropertyType.IsGenericType &&
-                p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
-
-        if (dbSetProperties != null)
-        {
-            var propertiesNames = dbSetProperties.Select(s => s.Name).ToArray();
-            return View(propertiesNames);
-        }
+        var tablesList = GetTablesList();
+        ViewBag.TablesList = tablesList;
 
         // Handle error case when the specified entity is not found
-        return View("EntityNotFound");
+        return View();
     }
 
     [HttpGet("{entityName}")]
-    public async Task<IActionResult> Edit(string entityName)
+    public async Task<IActionResult> Index(string entityName)
     {
+        var tablesList = GetTablesList();
+        ViewBag.TablesList = tablesList;
+
         var entityDbSet = typeof(AppDbContext)
             .GetProperties()
             .First(p =>
@@ -62,8 +56,26 @@ public class AdminEntityController : Controller
             return View(internalData);
         }
 
-        // Handle error case when the specified entity is not found
-        return View("EntityNotFound");
+        return View();
+    }
+
+    private IReadOnlyList<string> GetTablesList()
+    {
+        var result = new List<string>();
+
+        var dbSetProperties = typeof(AppDbContext)
+            .GetProperties()
+            .Where(p =>
+                p.PropertyType.IsGenericType &&
+                p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
+
+        if (dbSetProperties != null)
+        {
+            var propertiesNames = dbSetProperties.Select(s => s.Name).ToArray();
+            result.AddRange(propertiesNames);
+        }
+
+        return result;
     }
 
     private EntityDataDto PrepareDataToDisplay(IReadOnlyList<dynamic> data)

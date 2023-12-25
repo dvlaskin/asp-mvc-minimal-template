@@ -1,11 +1,40 @@
-@model IEnumerable<string>
+@model EntityDataDto
+@{
+    ViewData["Title"] = "DataBase management";
+}
 
-<h1>List of entities</h1>
-<ul>
-    @foreach (var item in Model)
-    {
-        <li>
-            <a asp-action="Edit" asp-route-entityName="@item">@item</a>
-        </li>
-    }
-</ul>
+@if (Model is null || Model.EntityData.Count == 0)
+{
+    <h4>No data in the database</h4>
+    return;
+}
+
+<h1>Edit - @Model.EntityName</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                @foreach (var header in Model.EntityData)
+                {
+                    foreach (var row in header)
+                    {
+                        <th>@row.Name</th>
+                    }
+                    break;
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var records in Model.EntityData)
+            {
+                <tr>
+                    @foreach (var row in records)
+                    {
+                        <td>@row.Value</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,9 @@
+<h1>Tables</h1>
+<ul class="nav nav-pills flex-column">
+    @foreach (var item in ViewBag.TablesList)
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Index" asp-route-entityName="@item">@item</a>
+        </li>
+    }
+</ul>
