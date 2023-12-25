@@ -12,7 +12,7 @@
 <h1>Edit - @Model.EntityName</h1>
 
 <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-striped table-sm table-hover">
         <thead>
             <tr>
                 @foreach (var header in Model.EntityData)
@@ -28,7 +28,7 @@
         <tbody>
             @foreach (var records in Model.EntityData)
             {
-                <tr>
+                <tr onclick="selectRow(this)">
                     @foreach (var row in records)
                     {
                         <td>@row.Value</td>
@@ -38,3 +38,16 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    function selectRow(row) {
+        // Remove the "selected" class from all rows
+        var rows = document.getElementsByTagName("tr");
+        for (var i = 0; i < rows.length; i++) {
+            rows[i].classList.remove("selected-row");
+        }
+
+        // Add the "selected" class to the clicked row
+        row.classList.add("selected-row");
+    }
+</script>

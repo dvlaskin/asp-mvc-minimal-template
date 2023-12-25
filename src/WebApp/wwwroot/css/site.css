@@ -20,3 +20,7 @@ body {
 .btn.tb-marg {
   margin: 5px 0px;
 }
+
+.selected-row {
+  background-color: lightblue;
+}
