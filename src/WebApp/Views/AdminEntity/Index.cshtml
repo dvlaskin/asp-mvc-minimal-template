@@ -5,6 +5,8 @@
 <ul>
     @foreach (var item in Model)
     {
-        <li>@item</li>
+        <li>
+            <a asp-action="Edit" asp-route-entityName="@item">@item</a>
+        </li>
     }
 </ul>
