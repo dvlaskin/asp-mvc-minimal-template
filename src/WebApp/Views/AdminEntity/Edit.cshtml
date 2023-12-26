@@ -1,34 +1,3 @@
 @model EntityDataDto
 
-<h1>Edit - @Model.EntityName</h1>
-
-<!-- button to go back to the list of entities -->
-<a asp-action="Index" class="btn btn-primary">Back to List</a>
-
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                @foreach (var header in Model.EntityData)
-                {
-                    foreach (var row in header)
-                    {
-                        <th>@row.Name</th>
-                    }
-                    break;
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var records in Model.EntityData)
-            {
-                <tr>
-                    @foreach (var row in records)
-                    {
-                        <td>@row.Value</td>
-                    }
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+<h1>Edit - @Model.EntityName - Record</h1>

@@ -59,6 +59,52 @@ public class AdminEntityController : Controller
         return View();
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(string entityName, string entityData)
+    {
+        return View();
+    }
+
+    [HttpGet("{entityName}/{id}")]
+    public async Task<IActionResult> Edit(string entityName, string id)
+    {
+        var tablesList = GetTablesList();
+        ViewBag.TablesList = tablesList;
+
+        logger.LogInformation($"=> Edit: {entityName} - {id}");
+
+        var entityDataModel = new EntityDataDto
+        {
+            EntityName = entityName,
+        };
+
+        return View(entityDataModel);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Edit(string entityName, EntityDataDto entityData)
+    {
+        return View();
+    }
+
+    [HttpGet("{entityName}/{id}")]
+    public async Task<IActionResult> Delete(string entityName, int id)
+    {
+        return View();
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete(string entityName, string entityData)
+    {
+        return View();
+    }
+
     private IReadOnlyList<string> GetTablesList()
     {
         var result = new List<string>();
