@@ -1,3 +1,32 @@
 @model EntityDataDto
 
+@{
+    ViewData["Title"] = $"Edit-{@Model.EntityName}-Record";
+    var recordData = Model.EntityData.FirstOrDefault();
+}
+
+
 <h1>Edit - @Model.EntityName - Record</h1>
+
+<div>
+
+    @foreach (var rec in recordData)
+    {
+        <div class="form-group">
+            <label asp-for="@rec.Name" class="control-label">@rec.Name</label>
+            @if (@rec.TypeValue == "checkbox")
+            {
+                var isChecked = @rec.Value == "True" ? "checked" : "";
+                <div class="form-check">
+                    <input name="@rec.Name" type="@rec.TypeValue" @isChecked />
+                </div>
+            }
+            else
+            {
+                <input asp-for="@rec.Value" type="@rec.TypeValue" class="form-control" />
+            }
+            <span asp-validation-for="@rec.Name" class="text-danger"></span>
+        </div>
+    }
+
+</div>

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebApp.Db;
 using WebApp.Models.Dto.AdminEntity;
+using WebApp.Domain.Extensions;
 
 namespace WebApp.Controllers;
 
@@ -38,17 +39,11 @@ public class AdminEntityController : Controller
         var tablesList = GetTablesList();
         ViewBag.TablesList = tablesList;
 
-        var entityDbSet = typeof(AppDbContext)
-            .GetProperties()
-            .First(p =>
-                p.PropertyType.IsGenericType
-                && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)
-                && p.Name == entityName)
-            .GetValue(appDbContext, null);
+        object? entityDbSet = GetDbSetByEntityName(entityName);
 
         if (entityDbSet is not null)
         {
-            var entity = await ((IQueryable<dynamic>)entityDbSet).ToListAsync();
+            IReadOnlyList<object> entity = await GetAllRecordFromDbSet(entityDbSet);
 
             var internalData = PrepareDataToDisplay(entity);
             internalData.EntityName = entityName;
@@ -58,6 +53,7 @@ public class AdminEntityController : Controller
 
         return View();
     }
+
 
     [HttpGet]
     public async Task<IActionResult> Create()
@@ -71,6 +67,7 @@ public class AdminEntityController : Controller
         return View();
     }
 
+
     [HttpGet("{entityName}/{id}")]
     public async Task<IActionResult> Edit(string entityName, string id)
     {
@@ -79,12 +76,19 @@ public class AdminEntityController : Controller
 
         logger.LogInformation($"=> Edit: {entityName} - {id}");
 
-        var entityDataModel = new EntityDataDto
-        {
-            EntityName = entityName,
-        };
+        object? entityDbSet = GetDbSetByEntityName(entityName);
 
-        return View(entityDataModel);
+        if (entityDbSet is not null)
+        {
+            IReadOnlyList<object> entity = await GetFilteredRecordsFromDbSet(entityDbSet, "Id", id);
+
+            var internalData = PrepareDataToDisplay(entity);
+            internalData.EntityName = entityName;
+
+            return View(internalData);
+        }
+
+        return View(new EntityDataDto() { EntityName = entityName });
     }
 
     [HttpPut]
@@ -92,6 +96,7 @@ public class AdminEntityController : Controller
     {
         return View();
     }
+
 
     [HttpGet("{entityName}/{id}")]
     public async Task<IActionResult> Delete(string entityName, int id)
@@ -103,6 +108,79 @@ public class AdminEntityController : Controller
     public async Task<IActionResult> Delete(string entityName, string entityData)
     {
         return View();
+    }
+
+
+    private object? GetDbSetByEntityName(string entityName)
+    {
+        return typeof(AppDbContext)
+            .GetProperties()
+            .First(p =>
+                p.PropertyType.IsGenericType
+                && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)
+                && p.Name == entityName)
+            .GetValue(appDbContext, null);
+    }
+
+    private static async Task<IReadOnlyList<object>> GetAllRecordFromDbSet(object? entityDbSet)
+    {
+        var result = new List<object>();
+
+        if (entityDbSet is null)
+        {
+            return result;
+        }
+
+        if (entityDbSet is IQueryable<object>)
+        {
+            result = await ((IQueryable<object>)entityDbSet).ToListAsync();
+        }
+
+        return result;
+    }
+
+    private static async Task<IReadOnlyList<object>> GetFilteredRecordsFromDbSet(object? entityDbSet, string propertyName, string propertyValue)
+    {
+        var result = new List<object>();
+
+        if (entityDbSet is null)
+        {
+            return result;
+        }
+
+        if (entityDbSet is IQueryable<object>)
+        {
+            var queryableDbSet = (IQueryable<object>)entityDbSet;
+
+            if (!string.IsNullOrEmpty(propertyName) && !string.IsNullOrEmpty(propertyValue))
+            {
+                var allRecords = await queryableDbSet.ToArrayAsync();
+                var filteredRecords = allRecords.Where(e => FilterByProperty((object)e, propertyName, propertyValue)).ToList();
+                result.AddRange(filteredRecords);
+            }
+        }
+
+        return result;
+    }
+
+    private static bool FilterByProperty(object entity, string propertyName, string propertyValue)
+    {
+        var result = false;
+
+        if (!string.IsNullOrEmpty(propertyName) && !string.IsNullOrEmpty(propertyValue))
+        {
+            var property = entity.GetType().GetProperty(propertyName);
+            if (property is not null)
+            {
+                var propertyValueStr = property.GetValue(entity, null)?.ToString();
+                if (propertyValueStr is not null)
+                {
+                    result = propertyValueStr == propertyValue;
+                }
+            }
+        }
+
+        return result;
     }
 
     private IReadOnlyList<string> GetTablesList()
@@ -124,7 +202,7 @@ public class AdminEntityController : Controller
         return result;
     }
 
-    private EntityDataDto PrepareDataToDisplay(IReadOnlyList<dynamic> data)
+    private EntityDataDto PrepareDataToDisplay(IReadOnlyList<object> data)
     {
         var internalData = new EntityDataDto();
 
@@ -132,11 +210,11 @@ public class AdminEntityController : Controller
         {
             var dataType = item.GetType();
             var properties = dataType.GetProperties();
-            var values = new List<(string Name, object Value, Type TypeValue)>();
+            var values = new List<(string Name, object Value, string TypeValue)>();
             foreach (var property in properties)
             {
                 var propertyValue = property.GetValue(item, null);
-                values.Add((property.Name, propertyValue?.ToString(), property.PropertyType));
+                values.Add((property.Name, propertyValue?.ToString(), property.PropertyType.ConvertToHtmlInputType()));
             }
             internalData.EntityData.Add(values);
         }
