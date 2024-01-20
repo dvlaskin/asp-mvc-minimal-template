@@ -1,0 +1,44 @@
+@using System
+@model IReadOnlyList<EntityFieldDto>
+
+@foreach (var rec in Model)
+{
+    <div class="form-group col-6">
+
+    @if (rec.Name.Equals("Id", StringComparison.OrdinalIgnoreCase))
+        {
+            <input class="form-control" hidden name="@rec.Name" type="@rec.FieldFrontEndType" value="@rec.Value" />
+            continue;
+        }
+
+        <label asp-for="@rec.Name" class="control-label">@rec.Name</label>
+        @if (@rec.FieldFrontEndType == "checkbox")
+        {
+            <div class="form-check">
+                <input name="@rec.Name" type="@rec.FieldFrontEndType" @(rec.Value is not null && (bool)rec.Value == true ?
+            "checked" : "") />
+            </div>
+        }
+        else if (@rec.FieldFrontEndType == "number" && @rec.IsFloatingPointNumber)
+        {
+            <input class="form-control" name="@rec.Name" type="@rec.FieldFrontEndType" min="0" step="any"
+                value="@rec.Value?.ToString()?.Replace(",",".")" />
+        }
+        else if (@rec.FieldFrontEndType == "number" && !@rec.IsFloatingPointNumber)
+        {
+            <input class="form-control" name="@rec.Name" type="@rec.FieldFrontEndType" min="0" value="@rec.Value" />
+        }
+        else if (@rec.FieldFrontEndType == "date")
+        {
+
+            var date = rec.Value is not null ? ((DateTime)rec.Value).ToString("yyyy-MM-dd") : rec.Value;
+
+            <input class="form-control" name="@rec.Name" type="@rec.FieldFrontEndType" value="@date" />
+        }
+        else
+        {
+            <input class="form-control" name="@rec.Name" type="@rec.FieldFrontEndType" value="@rec.Value" />
+        }
+        <span asp-validation-for="@rec.Name" class="text-danger"></span>
+    </div>
+}

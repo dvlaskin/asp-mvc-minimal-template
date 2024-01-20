@@ -18,6 +18,7 @@ public class AppDbContext : IdentityDbContext
     }
 
     public DbSet<AppUser>? AppUsers { get; set; }
+    public DbSet<SampleModel>? SampleModels { get; set; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
