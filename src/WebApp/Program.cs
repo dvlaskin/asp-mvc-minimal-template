@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using WebApp.Db;
 using WebApp.Domain.Interfaces;
 using WebApp.Models;
@@ -31,7 +30,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 // Db Repositories
 builder.Services.AddScoped<IRepositories, Repositories>();
 
-builder.Services.AddTransient<IEmailSender, FakeEmailSender>();
+// Services
+builder.Services.AddScoped<IAdminEntityEditor, AdminEntityEditor>();
+builder.Services.AddScoped<IEmailSender, FakeEmailSender>();
 
 
 var app = builder.Build();

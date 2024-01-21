@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WebApp.Domain.Attributes;
 using WebApp.Domain.Models;
 using WebApp.Models;
 
@@ -18,6 +19,8 @@ public class AppDbContext : IdentityDbContext
     }
 
     public DbSet<AppUser>? AppUsers { get; set; }
+
+    [EditableByAdmin]
     public DbSet<SampleModel>? SampleModels { get; set; }
 
 
