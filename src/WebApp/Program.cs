@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using WebApp.Db;
 using WebApp.Domain.Interfaces;
 using WebApp.Models;
@@ -11,9 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Connection to DB
-builder.Services.AddEntityFrameworkSqlite().AddDbContext<AppDbContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"))
-    );
+builder.Services.AddDbContext<AppDbContext>();
 
 // Configuration User's data
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -33,7 +30,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 // Db Repositories
 builder.Services.AddScoped<IRepositories, Repositories>();
 
-builder.Services.AddTransient<IEmailSender, FakeEmailSender>();
+// Services
+builder.Services.AddScoped<IAdminEntityEditor, AdminEntityEditor>();
+builder.Services.AddScoped<IEmailSender, FakeEmailSender>();
 
 
 var app = builder.Build();

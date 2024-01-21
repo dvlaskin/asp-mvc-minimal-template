@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WebApp.Domain.Attributes;
 using WebApp.Domain.Models;
 using WebApp.Models;
 
@@ -8,12 +9,36 @@ namespace WebApp.Db;
 
 public class AppDbContext : IdentityDbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    private readonly IConfiguration _configuration;
+
+    public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration)
+        : base(options)
     {
+        this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         Database.EnsureCreated();
     }
 
-    public DbSet<AppUser> AppUsers { get; set; }
+    public DbSet<AppUser>? AppUsers { get; set; }
+
+    [EditableByAdmin]
+    public DbSet<SampleModel>? SampleModels { get; set; }
+
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlite(_configuration.GetConnectionString("SqliteConnection"));
+            optionsBuilder
+                .UseLoggerFactory(
+                        LoggerFactory
+                            .Create(builder =>
+                                builder.AddConsole().SetMinimumLevel(LogLevel.Error))
+                    );
+        }
+
+        base.OnConfiguring(optionsBuilder);
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -1,0 +1,24 @@
+@model EntityDataDto
+
+@{
+    ViewData["Title"] = $"Add-{@Model.EntityName}-Record";
+    var recordData = Model.EntityData.FirstOrDefault();
+}
+
+<h1>Create - @Model.EntityName - Record</h1>
+
+<div class="container">
+
+    <form method="post">
+
+        @await Html.PartialAsync("_EntityFields", recordData)
+
+        <input type="hidden" name="EntityName" value="@Model.EntityName" />
+
+        <br>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary">Cancel</button>
+    </form>
+
+</div>

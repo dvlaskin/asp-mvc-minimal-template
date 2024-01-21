@@ -1,0 +1,103 @@
+@model EntityDataDto
+@{
+    ViewData["Title"] = "DataBase management";
+}
+
+@if (Model is null)
+{
+    <h4>No data in the database</h4>
+    return;
+}
+else if (Model.EntityData.Count == 0)
+{
+    <h4>No data in the database</h4>
+    <a class="btn btn-primary" asp-action="Create" asp-route-entityName="@Model.EntityName">Add</a>
+    return;
+}
+
+<h1>Edit - @Model.EntityName</h1>
+
+<div class="table-responsive">
+    <div class="toolbar">
+        <a id="add-btn" class="btn btn-primary" asp-action="Create" asp-route-entityName="@Model.EntityName">Add</a>
+        <a id="edit-btn" class="btn btn-secondary" asp-action="Edit" asp-route-entityName="@Model.EntityName"
+            asp-route-id="value">Edit</a>
+        <a id="delete-btn" class="btn btn-danger" asp-action="Delete" asp-route-entityName="@Model.EntityName"
+            asp-route-id="value">Delete</a>
+    </div>
+    <table class="table table-striped table-sm table-hover">
+        <thead>
+            <tr id="table-columns">
+                @foreach (var header in Model.EntityData)
+                {
+                    foreach (var row in header)
+                    {
+                        <th>@row.Name</th>
+                    }
+                    break;
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var records in Model.EntityData)
+            {
+                <tr onclick="selectRow(this)">
+                    @foreach (var row in records)
+                    {
+                        <td>@row.Value</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function selectRow(row) {
+        // Remove the "selected" class from all rows
+        var rows = document.getElementsByTagName("tr");
+        for (var i = 0; i < rows.length; i++) {
+            rows[i].classList.remove("selected-row");
+        }
+
+        // Add the "selected" class to the clicked row
+        row.classList.add("selected-row");
+
+        // Set id from selected row to the edit button in asp-route-id attribute
+        const editButton = document.getElementById("edit-btn");
+        const deleteButton = document.getElementById("delete-btn");
+        const idValue = getSelectedRow();
+
+        // Replace last element in href to idValue
+        editButton.href = editButton.href.substring(0, editButton.href.lastIndexOf('/') + 1) + idValue;
+        deleteButton.href = deleteButton.href.substring(0, deleteButton.href.lastIndexOf('/') + 1) + idValue;
+    }
+
+    function getSelectedRow() {
+        let idValue = null;
+        const tableColumns = document.getElementById("table-columns");
+        const columns = tableColumns.getElementsByTagName("th");
+
+
+        let idColumnsIndex = -1;
+        for (let j = 0; j < columns.length; j++) {
+            if (columns[j].innerText === "Id") {
+                idColumnsIndex = j;
+                break;
+            }
+        }
+
+        if (idColumnsIndex !== -1) {
+            const rows = document.getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i].classList.contains("selected-row")) {
+                    const cells = rows[i].getElementsByTagName("td");
+                    idValue = cells[idColumnsIndex].innerText;
+                    break;
+                }
+            }
+        }
+
+        return idValue;
+    }
+</script>

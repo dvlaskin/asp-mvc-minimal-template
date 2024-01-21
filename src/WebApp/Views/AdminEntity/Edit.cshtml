@@ -1,0 +1,42 @@
+@model EntityDataDto
+
+@{
+    ViewData["Title"] = $"Edit-{@Model.EntityName}-Record";
+    var recordData = Model.EntityData.FirstOrDefault();
+}
+
+
+<h1>Edit - @Model.EntityName - Record</h1>
+
+@if (Model.EntityData.Count > 1)
+{
+    <div class="alert alert-danger" role="alert">
+    <strong>Warning!</strong> Multiple records found for this entity.
+</div>
+    return;
+}
+else if (Model.EntityData.Count == 0)
+{
+    <div class="alert alert-danger" role="alert">
+    <strong>Warning!</strong> No records found for this entity.
+</div>
+    return;
+}
+
+<div class="container">
+
+    <form method="post" action="/AdminEntity/Edit">
+
+        @Html.AntiForgeryToken()
+
+        @await Html.PartialAsync("_EntityFields", recordData)
+
+        <input type="hidden" name="EntityName" value="@Model.EntityName" />
+
+        <br>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary">Cancel</button>
+    </form>
+
+</div>
