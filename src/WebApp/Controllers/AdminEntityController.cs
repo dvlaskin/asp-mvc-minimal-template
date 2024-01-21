@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using WebApp.Domain.Interfaces;
 
 namespace WebApp.Controllers;
@@ -51,9 +50,6 @@ public class AdminEntityController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(string entityName, [FromForm] Dictionary<string, string> formData)
     {
-        logger.LogInformation($"=> Create: EntityName = {entityName}");
-        logger.LogInformation($"=> Create: {JsonConvert.SerializeObject(formData, Formatting.Indented)}");
-
         await entityEditor.CreateEntityRecordAsync(entityName, formData);
 
         return RedirectToAction("Index", new { entityName = entityName });
@@ -64,8 +60,6 @@ public class AdminEntityController : Controller
     public async Task<IActionResult> Edit(string entityName, string id)
     {
         ViewBag.TablesList = entityEditor.GetTablesList();
-
-        logger.LogInformation($"=> Edit: {entityName} - {id}");
 
         var entityRecord = await entityEditor.GetRecordValuesAsync(entityName, id);
         if (entityRecord is null)
@@ -79,9 +73,6 @@ public class AdminEntityController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit([FromForm] string entityName, [FromForm] Dictionary<string, string> formData)
     {
-        logger.LogInformation($"=> EditPost: EntityName = {entityName}");
-        logger.LogInformation($"=> EditPost: {JsonConvert.SerializeObject(formData, Formatting.Indented)}");
-
         await entityEditor.UpdateRecordAsync(entityName, formData);
 
         return RedirectToAction("Index", new { entityName = entityName });
@@ -91,8 +82,6 @@ public class AdminEntityController : Controller
     [HttpGet("{entityName}/{id}")]
     public async Task<IActionResult> Delete(string entityName, string id)
     {
-        logger.LogInformation($"=> Delete: {entityName} - {id}");
-
         await entityEditor.DeleteItemAsync(entityName, id);
 
         return RedirectToAction("Index", new { entityName = entityName });
