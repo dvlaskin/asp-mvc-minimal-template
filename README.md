@@ -17,7 +17,13 @@ This template includes the basic setup for user authentication and registration,
 
 - The application uses SQLite database and EntityFrameworkCore ORM.
 - Authentication and authorization are handled by MS AspNetCore Identity.
-- Existing controllers include Home (basic homepage), Account (registration new account, login, logout, reset password, etc.), AccountManager (change email, password, etc. of logged-in user), AdminUser (view and change basic information about user accounts), and AdminUserRole (add and remove the UserRole of user accounts).
+- Existing controllers include:
+  - Home - basic homepage, 
+  - Account - registration new account, login, logout, reset password, etc., 
+  - AccountManager - change email, password, etc. of logged-in user, 
+  - AdminUser - view and change basic information about user accounts, 
+  - AdminUserRole - add and remove the UserRole of user accounts,
+  - AdminEntity - simple editor for database entities
 
 ## Technical Description
 This is an ASP.NET web application built on the Microsoft.NET.Sdk.Web SDK. The application targets .NET 6.0 and includes support for nullable reference types and implicit usings.
