@@ -21,9 +21,9 @@ else if (Model.EntityData.Count == 0)
     <div class="toolbar">
         <a id="add-btn" class="btn btn-primary" asp-action="Create" asp-route-entityName="@Model.EntityName">Add</a>
         <a id="edit-btn" class="btn btn-secondary" asp-action="Edit" asp-route-entityName="@Model.EntityName"
-            asp-route-id="value">Edit</a>
+            asp-route-id="value" hidden>Edit</a>
         <a id="delete-btn" class="btn btn-danger" asp-action="Delete" asp-route-entityName="@Model.EntityName"
-            asp-route-id="value">Delete</a>
+            asp-route-id="value" hidden>Delete</a>
     </div>
     <table class="table table-striped table-sm table-hover">
         <thead>
@@ -71,6 +71,10 @@ else if (Model.EntityData.Count == 0)
         // Replace last element in href to idValue
         editButton.href = editButton.href.substring(0, editButton.href.lastIndexOf('/') + 1) + idValue;
         deleteButton.href = deleteButton.href.substring(0, deleteButton.href.lastIndexOf('/') + 1) + idValue;
+
+        // Set buttons Edit and Delete visible
+        editButton.removeAttribute("hidden");
+        deleteButton.removeAttribute("hidden");
     }
 
     function getSelectedRow() {

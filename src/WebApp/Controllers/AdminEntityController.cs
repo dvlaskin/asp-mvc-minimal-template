@@ -40,6 +40,8 @@ public class AdminEntityController : Controller
     [HttpGet]
     public IActionResult Create(string entityName)
     {
+        ViewData["ReturnUrl"] = $"{nameof(Index)}/{entityName}";
+
         ViewBag.TablesList = entityEditor.GetTablesList();
 
         var model = entityEditor.GetDefaultNewRecordModel(entityName);
@@ -59,6 +61,11 @@ public class AdminEntityController : Controller
     [HttpGet("{entityName}/{id}")]
     public async Task<IActionResult> Edit(string entityName, string id)
     {
+        // url for return from edit page
+        var currentUrl = Request.Path.Value;
+        var prefixUrl = currentUrl?[..currentUrl.IndexOf(nameof(Edit))];
+        ViewData["ReturnUrl"] = $"{prefixUrl}{nameof(Index)}/{entityName}";
+
         ViewBag.TablesList = entityEditor.GetTablesList();
 
         var entityRecord = await entityEditor.GetRecordValuesAsync(entityName, id);
