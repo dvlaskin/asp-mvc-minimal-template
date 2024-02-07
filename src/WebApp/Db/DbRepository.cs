@@ -19,24 +19,27 @@ public class DbRepository<T> : IRepository<T> where T : class
         return dbSet.AsQueryable();
     }
 
-    public T GetItem<K>(K id)
+    public async Task<T> GetItemAsync<K>(K id)
     {
-        return dbSet.Find(id);
+        return await dbSet.FindAsync(id);
     }
 
-    public void AddItem(T item)
+    public async Task<T> AddItemAsync(T item)
     {
-        if (item != null)
-            dbSet.Add(item);
+        if (item is null)
+            throw new ArgumentNullException(nameof(item));
+
+        var result = await dbSet.AddAsync(item);
+        return result.Entity;
     }
 
     public void UpdateItem(T item)
     {
-        if (item != null)
-        {
-            dbSet.Attach(item);
-            dbContext.Entry(item).State = EntityState.Modified;
-        }
+        if (item is null)
+            return;
+
+        dbSet.Attach(item);
+        dbContext.Entry(item).State = EntityState.Modified;
     }
 
     public void DeleteItem<K>(K id)

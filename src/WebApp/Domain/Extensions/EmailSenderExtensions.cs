@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using WebApp.Domain.Interfaces;
 
 namespace WebApp.Domain.Extensions;

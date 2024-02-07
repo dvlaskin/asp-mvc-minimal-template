@@ -2,9 +2,10 @@ using WebApp.Domain.Models;
 
 namespace WebApp.Domain.Interfaces;
 
-public interface IRepositories
+public interface IEntityStorage
 {
     IRepository<SampleModel> SampleRepo { get; }
 
-    void Save();
+    int Save();
+    Task<int> SaveAsync();
 }

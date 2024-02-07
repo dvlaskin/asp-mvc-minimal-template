@@ -292,36 +292,36 @@ public class AdminEntityEditor : IAdminEntityEditor
         // set properties of the generic instance with the values from the form
         foreach (var property in entityType.GetProperties())
         {
-            if (recordFields.ContainsKey(property.Name))
+            if (!recordFields.ContainsKey(property.Name))
+                continue;
+
+            var propertyValue = recordFields[property.Name];
+
+            if (property.PropertyType == typeof(decimal))
             {
-                var propertyValue = recordFields[property.Name];
-
-                if (property.PropertyType == typeof(decimal))
-                {
-                    propertyValue = propertyValue.Replace(".", ",");
-                }
-
-                object convertedValue;
-
-                // Special case for boolean properties
-                if (property.PropertyType == typeof(bool))
-                {
-                    convertedValue = propertyValue == "true" || propertyValue == "on";
-                }
-                else
-                {
-                    // Convert the string value to the appropriate data type
-                    convertedValue = Convert.ChangeType(propertyValue, property.PropertyType);
-                }
-
-                // generate Id for the entity if it is not set
-                if (property.Name == "Id" && convertedValue is null)
-                {
-                    convertedValue = Guid.NewGuid().ToString();
-                }
-
-                property.SetValue(entityInstance, convertedValue);
+                propertyValue = propertyValue.Replace(".", ",");
             }
+
+            object convertedValue;
+
+            // Special case for boolean properties
+            if (property.PropertyType == typeof(bool))
+            {
+                convertedValue = propertyValue == "true" || propertyValue == "on";
+            }
+            else
+            {
+                // Convert the string value to the appropriate data type
+                convertedValue = Convert.ChangeType(propertyValue, property.PropertyType);
+            }
+
+            // generate Id for the entity if it is not set
+            if (property.Name == "Id" && convertedValue is null)
+            {
+                convertedValue = Guid.NewGuid().ToString();
+            }
+
+            property.SetValue(entityInstance, convertedValue);
         }
     }
 

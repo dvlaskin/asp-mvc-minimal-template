@@ -8,10 +8,10 @@ public class FakeEmailSender : IEmailSender
     {
         await Task.Run(() =>
         {
-            System.Console.WriteLine("=> Send Email:");
-            System.Console.WriteLine($"=> email: {email}");
-            System.Console.WriteLine($"=> subject: {subject}");
-            System.Console.WriteLine($"=> message: {message}");
+            Console.WriteLine("=> Send Email:");
+            Console.WriteLine($"=> email: {email}");
+            Console.WriteLine($"=> subject: {subject}");
+            Console.WriteLine($"=> message: {message}");
         });
 
     }

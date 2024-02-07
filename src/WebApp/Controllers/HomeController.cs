@@ -8,10 +8,10 @@ namespace WebApp.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly IRepositories _repos;
+    private readonly IEntityStorage _repos;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(IRepositories repos, ILogger<HomeController> logger)
+    public HomeController(IEntityStorage repos, ILogger<HomeController> logger)
     {
         _repos = repos;
         _logger = logger;

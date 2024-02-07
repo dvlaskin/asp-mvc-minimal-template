@@ -87,7 +87,7 @@ public class AppDbContext : IdentityDbContext
         builder.Entity<AppUser>().HasData(adminUser);
 
 
-        // seed defaul Admin Role for default user
+        // seed default Admin Role for default user
         builder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
         {
             RoleId = adminRoleId,

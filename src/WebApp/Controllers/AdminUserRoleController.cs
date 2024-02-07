@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
 using WebApp.Models.Dto.AdminUserRole;
 
-
 namespace WebApp.Controllers;
-
 
 [Authorize(Roles = "Admin")]
 [Route("[controller]/[action]")]
@@ -23,27 +22,23 @@ public class AdminUserRoleController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var users = await Task.Run(() => _userManager.Users);
+        var users = await _userManager
+            .Users
+            .ToListAsync();
+
         return View(users);
     }
 
     public async Task<IActionResult> Edit(string id)
     {
-        if (id == null)
+        var user = await GetUserByIdAsync(id);
+        if (user is null)
         {
-            ModelState.AddModelError("", "User not found");
-            return View();
-        }
-
-        var user = await _userManager.FindByIdAsync(id);
-        if (user == null)
-        {
-            ModelState.AddModelError("", "User not found");
             return View();
         }
 
         var userRoles = await _userManager.GetRolesAsync(user);
-        var allRoles = _roleManager.Roles.Select(s => s.Name).ToArray();
+        var allRoles = await _roleManager.Roles.Select(s => s.Name).ToListAsync();
 
         var model = new UserRolesDto()
         {
@@ -60,16 +55,9 @@ public class AdminUserRoleController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Add(string userId, string addRole)
     {
-        if (userId == null)
+        var user = await GetUserByIdAsync(userId);
+        if (user is null || string.IsNullOrWhiteSpace(addRole))
         {
-            ModelState.AddModelError("", "User not found");
-            return RedirectToAction(nameof(Edit), new { id = userId });
-        }
-
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            ModelState.AddModelError("", "User not found");
             return RedirectToAction(nameof(Edit), new { id = userId });
         }
 
@@ -90,16 +78,9 @@ public class AdminUserRoleController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string userId, string removeRole)
     {
-        if (userId == null)
+        var user = await GetUserByIdAsync(userId);
+        if (user is null || string.IsNullOrWhiteSpace(removeRole))
         {
-            ModelState.AddModelError("", "User not found");
-            return RedirectToAction(nameof(Edit), new { id = userId });
-        }
-
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            ModelState.AddModelError("", "User not found");
             return RedirectToAction(nameof(Edit), new { id = userId });
         }
 
@@ -116,4 +97,21 @@ public class AdminUserRoleController : Controller
         return RedirectToAction(nameof(Edit), new { id = user.Id });
     }
 
+
+    private async Task<AppUser?> GetUserByIdAsync(string userId)
+    {
+        if (userId is null)
+        {
+            ModelState.AddModelError("", "User not found");
+            return null;
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            ModelState.AddModelError("", "User not found");
+        }
+
+        return user;
+    }
 }

@@ -1,4 +1,3 @@
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,14 +24,14 @@ public class AdminUserController : Controller
 
     public async Task<IActionResult> Edit(string id)
     {
-        if (id == null)
+        if (id is null)
         {
             ModelState.AddModelError("", "User not found");
             return View();
         }
 
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null)
+        if (user is null)
         {
             ModelState.AddModelError("", "User not found");
             return View();
@@ -51,27 +50,30 @@ public class AdminUserController : Controller
             return View(model);
         }
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "User not found");
-                return View(model);
-            }
+            return View(model);
+        }
 
-            user.Email = model.Email;
-            user.UserName = model.Email;
+        var user = await _userManager.FindByIdAsync(id);
+        if (user is null)
+        {
+            ModelState.AddModelError("", "User not found");
+            return View(model);
+        }
 
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
+        user.Email = model.Email;
+        user.UserName = model.Email;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
         }
 
         return View(model);
@@ -79,14 +81,14 @@ public class AdminUserController : Controller
 
     public async Task<IActionResult> Delete(string id)
     {
-        if (id == null)
+        if (id is null)
         {
             ModelState.AddModelError("", "User not found");
             return View();
         }
 
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null)
+        if (user is null)
         {
             ModelState.AddModelError("", "User not found");
             return View();
@@ -105,24 +107,27 @@ public class AdminUserController : Controller
             return View(model);
         }
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "User not found");
-                return View(model);
-            }
+            return View(model);
+        }
 
-            var result = await _userManager.DeleteAsync(user);
-            if (result.Succeeded)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
+        var user = await _userManager.FindByIdAsync(id);
+        if (user is null)
+        {
+            ModelState.AddModelError("", "User not found");
+            return View(model);
+        }
+
+        var result = await _userManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
         }
 
         return View(model);

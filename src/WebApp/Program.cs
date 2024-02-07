@@ -28,7 +28,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
 // Db Repositories
-builder.Services.AddScoped<IRepositories, Repositories>();
+builder.Services.AddScoped<IEntityStorage, EntityStorage>();
 
 // Services
 builder.Services.AddScoped<IAdminEntityEditor, AdminEntityEditor>();

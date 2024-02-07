@@ -3,7 +3,7 @@ using WebApp.Domain.Models;
 
 namespace WebApp.Db;
 
-public class Repositories : IDisposable, IRepositories
+public class EntityStorage : IDisposable, IEntityStorage
 {
     private readonly AppDbContext _dbContext;
 
@@ -16,24 +16,25 @@ public class Repositories : IDisposable, IRepositories
     {
         get
         {
-            if (_sampleRepo == null)
-            {
-                _sampleRepo = new DbRepository<SampleModel>(_dbContext);
-            }
-
+            _sampleRepo ??= new DbRepository<SampleModel>(_dbContext);
             return _sampleRepo;
         }
     }
 
-    public Repositories(AppDbContext dbContext)
+    public EntityStorage(AppDbContext dbContext)
     {
         this._dbContext = dbContext;
     }
 
 
-    public void Save()
+    public int Save()
     {
-        _dbContext.SaveChanges();
+        return _dbContext.SaveChanges();
+    }
+
+    public async Task<int> SaveAsync()
+    {
+        return await _dbContext.SaveChangesAsync();
     }
 
 

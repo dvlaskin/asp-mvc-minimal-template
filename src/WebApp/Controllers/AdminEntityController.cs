@@ -8,30 +8,30 @@ namespace WebApp.Controllers;
 [Route("[controller]/[action]")]
 public class AdminEntityController : Controller
 {
-    private readonly IAdminEntityEditor entityEditor;
-    private readonly ILogger<AdminEntityController> logger;
+    private readonly IAdminEntityEditor _entityEditor;
+    private readonly ILogger<AdminEntityController> _logger;
 
     public AdminEntityController(
         IAdminEntityEditor entityEditor,
         ILogger<AdminEntityController> logger)
     {
-        this.entityEditor = entityEditor;
-        this.logger = logger;
+        this._entityEditor = entityEditor;
+        this._logger = logger;
     }
 
     [HttpGet]
     public IActionResult Index()
     {
-        ViewBag.TablesList = entityEditor.GetTablesList();
+        ViewBag.TablesList = _entityEditor.GetTablesList();
         return View();
     }
 
     [HttpGet("{entityName}")]
     public async Task<IActionResult> Index(string entityName)
     {
-        ViewBag.TablesList = entityEditor.GetTablesList();
+        ViewBag.TablesList = _entityEditor.GetTablesList();
 
-        var entityRecords = await entityEditor.GetAllRecordFromDbSetAsync(entityName);
+        var entityRecords = await _entityEditor.GetAllRecordFromDbSetAsync(entityName);
 
         return View(entityRecords);
     }
@@ -42,9 +42,9 @@ public class AdminEntityController : Controller
     {
         ViewData["ReturnUrl"] = $"{nameof(Index)}/{entityName}";
 
-        ViewBag.TablesList = entityEditor.GetTablesList();
+        ViewBag.TablesList = _entityEditor.GetTablesList();
 
-        var model = entityEditor.GetDefaultNewRecordModel(entityName);
+        var model = _entityEditor.GetDefaultNewRecordModel(entityName);
 
         return View(model);
     }
@@ -52,7 +52,7 @@ public class AdminEntityController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(string entityName, [FromForm] Dictionary<string, string> formData)
     {
-        await entityEditor.CreateEntityRecordAsync(entityName, formData);
+        await _entityEditor.CreateEntityRecordAsync(entityName, formData);
 
         return RedirectToAction("Index", new { entityName = entityName });
     }
@@ -66,9 +66,9 @@ public class AdminEntityController : Controller
         var prefixUrl = currentUrl?[..currentUrl.IndexOf(nameof(Edit))];
         ViewData["ReturnUrl"] = $"{prefixUrl}{nameof(Index)}/{entityName}";
 
-        ViewBag.TablesList = entityEditor.GetTablesList();
+        ViewBag.TablesList = _entityEditor.GetTablesList();
 
-        var entityRecord = await entityEditor.GetRecordValuesAsync(entityName, id);
+        var entityRecord = await _entityEditor.GetRecordValuesAsync(entityName, id);
         if (entityRecord is null)
         {
             return NotFound();
@@ -80,7 +80,7 @@ public class AdminEntityController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit([FromForm] string entityName, [FromForm] Dictionary<string, string> formData)
     {
-        await entityEditor.UpdateRecordAsync(entityName, formData);
+        await _entityEditor.UpdateRecordAsync(entityName, formData);
 
         return RedirectToAction("Index", new { entityName = entityName });
     }
@@ -89,7 +89,7 @@ public class AdminEntityController : Controller
     [HttpGet("{entityName}/{id}")]
     public async Task<IActionResult> Delete(string entityName, string id)
     {
-        await entityEditor.DeleteItemAsync(entityName, id);
+        await _entityEditor.DeleteItemAsync(entityName, id);
 
         return RedirectToAction("Index", new { entityName = entityName });
     }
