@@ -297,12 +297,17 @@ public class AdminEntityEditor : IAdminEntityEditor
 
             var propertyValue = recordFields[property.Name];
 
-            if (property.PropertyType == typeof(decimal))
+            if (property.PropertyType == typeof(string) && propertyValue is null)
+            {
+                propertyValue = string.Empty;
+            }
+
+            if (property.PropertyType == typeof(decimal) && propertyValue is not null)
             {
                 propertyValue = propertyValue.Replace(".", ",");
             }
 
-            object convertedValue;
+            object? convertedValue;
 
             // Special case for boolean properties
             if (property.PropertyType == typeof(bool))
@@ -311,12 +316,11 @@ public class AdminEntityEditor : IAdminEntityEditor
             }
             else
             {
-                // Convert the string value to the appropriate data type
-                convertedValue = Convert.ChangeType(propertyValue, property.PropertyType);
+                convertedValue = ConvertToType(property, propertyValue);
             }
 
             // generate Id for the entity if it is not set
-            if (property.Name == "Id" && convertedValue is null)
+            if (property.Name == "Id" && string.IsNullOrWhiteSpace(convertedValue?.ToString()))
             {
                 convertedValue = Guid.NewGuid().ToString();
             }
@@ -324,6 +328,7 @@ public class AdminEntityEditor : IAdminEntityEditor
             property.SetValue(entityInstance, convertedValue);
         }
     }
+
 
     private static void EntityRecordValidation(string entityName, Dictionary<string, string> recordFields)
     {
@@ -335,6 +340,35 @@ public class AdminEntityEditor : IAdminEntityEditor
         if (recordFields is null || !recordFields.Any())
         {
             throw new ArgumentException("The recordFields is empty", nameof(recordFields));
+        }
+    }
+
+    /// <summary>
+    /// Convert the string value to the appropriate data type
+    /// </summary>
+    /// <param name="property"></param>
+    /// <param name="propertyValue"></param>
+    /// <returns></returns>
+    private static object? ConvertToType(PropertyInfo property, string propertyValue)
+    {
+        // If propertyValue is null
+        if (propertyValue == null)
+        {
+            // If property type is nullable, return null
+            if (property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                return null;
+
+            // If property type is reference type, return null
+            if (!property.PropertyType.IsValueType)
+                return null;
+
+            // If property type is value type, create instance
+            return Activator.CreateInstance(property.PropertyType);
+        }
+        else
+        {
+            // If the input value is not null, proceed with the conversion
+            return Convert.ChangeType(propertyValue, property.PropertyType);
         }
     }
 }

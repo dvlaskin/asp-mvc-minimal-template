@@ -52,7 +52,15 @@ public class AdminEntityController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(string entityName, [FromForm] Dictionary<string, string> formData)
     {
-        await _entityEditor.CreateEntityRecordAsync(entityName, formData);
+        try
+        {
+            await _entityEditor.CreateEntityRecordAsync(entityName, formData);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating record");
+        }
+
 
         return RedirectToAction("Index", new { entityName = entityName });
     }
